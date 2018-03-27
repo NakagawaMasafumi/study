@@ -49,10 +49,10 @@ def collect_from_japan():
     collect_from_japan()
 
 def collect_from_follow_users():
-    collections = [db.tweets_from_follow_users0, db.tweets_from_follow_users1, db.tweets_from_follow_users2 ,db.tweets_from_follow_users3]
-    indexes = [0, 5000, 10000, 15000]
+    indexes = [0, 5000, 10000, 15000, 20000, 25000]
     client = pymongo.MongoClient('localhost', 27017)
     db = client.Tweets
+    collections = [db.tweets_from_follow_users0, db.tweets_from_follow_users1, db.tweets_from_follow_users2 ,db.tweets_from_follow_users3, ]
     arg = int(sys.argv[1]) #コマンド例： python collecting_tweets_with_API.py 0
 
     co = collections[arg]
@@ -93,6 +93,50 @@ def collect_from_follow_users():
     print('interrupted')
     time.sleep(1)
     collect_from_follow_users()
+
+def collect_follow_relationships():
+    max_number_query_ids = 15
+    client = pymongo.MongoClient('localhost', 27017)
+    db = client.Tweets
+    co = db.ids
+
+    f = open('setting.json', 'r')
+    setting = json.load(f)
+    f.close()
+    url_ids = setting['ids_url']
+
+    f = open('data/top_geo_existing_user_id_30000.json', 'r')
+    user_list = json.load(f)
+    f.close()
+    user_list = user_list[0:10000]
+    # user_list = user_list[10000:20000]
+    # user_list = user_list[20000:30000]
+    auth = OAuth1(setting['api_key'], setting['api_secret'], setting['access_key'], setting['access_secret'])
+    cnt_ids = 0
+    for i, user_id in enumerate(user_list):
+        print(i)
+        if cnt_ids == max_query_ids:
+            time.sleep(60 * 15 + 1)
+            cnt_ids = 0
+        obj = {'user_id':user_id, 'followings':[]}
+        r = requests.get(url_ids+str(user_id), auth=auth)
+        cnt_ids += 1
+        for line in r.iter_lines():
+            followings = json.loads(line)
+            obj['followings'].append(followings)
+            co.save(obj)
+
+        while 'errors' not in followings and 'error' not in followings and followings['next_cursor'] > 0:
+            if cnt_ids == max_query_ids:
+                time.sleep(60 * 15 + 1)
+                cnt_ids = 0
+            url_ids_tmp = url_ids + str(user_id) + '&cursor=' + followings['next_cursor_str']
+            r2 = requests.get(url_ids_tmp, auth=auth)
+            cnt_ids += 1
+            for line2 in r2.iter_lines():
+                followings = json.loads(line2)
+                obj['followings'].append(followings)
+                co.save(obj)
 
 def make_user_list_for_experiment():
     #start_point = datetime(2017,5,26,20)-timedelta(hours=9) #収集開始日時
@@ -160,24 +204,7 @@ def make_user_list_for_experiment():
     cnt = 0
     link = 0
     link_dic = {}
-    co_ids = db.new_ids1
-    for a_id in co_ids.find(no_cursor_timeout=True):
-        try:
-            if a_id['user_id'] in user_list:
-                cnt += 1
-                print(cnt)
-                for followings in a_id['followings']:
-                    if 'ids' in followings:
-                        for id in followings['ids']:
-                            id = int(id)
-                            if id in user_list:
-                                if a_id['user_id'] not in link_dic:
-                                    link_dic[a_id['user_id']] = []
-                                link_dic[a_id['user_id']].append(id)
-                                #link += 1
-        except Exception as e:
-            print(e)
-    co_ids = db.new_ids3
+    co_ids = db.ids
     for a_id in co_ids.find(no_cursor_timeout=True):
         try:
             if a_id['user_id'] in user_list:
@@ -195,25 +222,12 @@ def make_user_list_for_experiment():
         except Exception as e:
             print(e)
 
-    co_list = db.new_list1
-    for a_id in co_list.find(no_cursor_timeout=True):
-        try:
-            if a_id['user_id'] in user_list:
-                cnt += 1
-                print(cnt)
-                for id in a_id['followings']:
-                    id = int(id)
-                    if id in user_list:
-                        if a_id['user_id'] not in link_dic:
-                            link_dic[a_id['user_id']] = []
-                        link_dic[a_id['user_id']].append(id)
-                        #link += 1
-        except Exception as e:
-            print(e)
     f = open('data/link2.json', 'w')
     json.dump(link_dic, f)
     f.close()
+
 if __name__ == '__main__':
     # collect_from_japan()
     collect_from_follow_users()
+    collect_follow_relationships()
     make_user_list_for_experiment()
