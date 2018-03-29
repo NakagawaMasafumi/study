@@ -129,17 +129,17 @@ def eval_bandit():
 			for p in params:
 				for experiment_id in experiment_ids:
 					if p is None:
-						input_path = path_follow_list_dir+area+'/follow_list_'+area+'_'+m+'_'+str(experiment_id)+'_noun_long.csv'
-						output_path = path_result_recall_dir+area+'/n_geotags_in_area_'+area+'_'+m+'_'+str(experiment_id)+'_noun_long.csv'
-						recall_output_path = path_result_recall_dir+area+'/recall_'+area+'_'+m+'_'+str(experiment_id)+'_noun_long.csv'
-						output_path_acc = path_result_recall_dir+area+'/n_geotags_in_area_accumulated_'+area+'_'+m+'_'+str(experiment_id)+'_noun_long.csv'
-						recall_output_path_acc = path_result_recall_dir+area+'/recall_accumulated_'+area+'_'+m+'_'+str(experiment_id)+'_noun_long.csv'
+						input_path = path_follow_list_dir+area+'/follow_list_'+area+'_'+m+'_'+str(experiment_id)+'_noun.csv'
+						output_path = path_result_recall_dir+area+'/n_geotags_in_area_'+area+'_'+m+'_'+str(experiment_id)+'_noun.csv'
+						recall_output_path = path_result_recall_dir+area+'/recall_'+area+'_'+m+'_'+str(experiment_id)+'_noun.csv'
+						output_path_acc = path_result_recall_dir+area+'/n_geotags_in_area_accumulated_'+area+'_'+m+'_'+str(experiment_id)+'_noun.csv'
+						recall_output_path_acc = path_result_recall_dir+area+'/recall_accumulated_'+area+'_'+m+'_'+str(experiment_id)+'_noun.csv'
 					else:
-						input_path = path_follow_list_dir+area+'/follow_list_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun_long.csv'
-						output_path = path_result_recall_dir+area+'/n_geotags_in_area_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun_long.csv'
-						recall_output_path = path_result_recall_dir+area+'/recall_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun_long.csv'
-						output_path_acc = path_result_recall_dir+area+'/n_geotags_in_area_accumulated_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun_long.csv'
-						recall_output_path_acc = path_result_recall_dir+area+'/recall_accumulated_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun_long.csv'
+						input_path = path_follow_list_dir+area+'/follow_list_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun.csv'
+						output_path = path_result_recall_dir+area+'/n_geotags_in_area_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun.csv'
+						recall_output_path = path_result_recall_dir+area+'/recall_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun.csv'
+						output_path_acc = path_result_recall_dir+area+'/n_geotags_in_area_accumulated_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun.csv'
+						recall_output_path_acc = path_result_recall_dir+area+'/recall_accumulated_'+area+'_'+m+'_'+str(p)+'_'+str(experiment_id)+'_noun.csv'
 
 					if os.path.exists(input_path) and not os.path.exists(output_path):
 						f = open(input_path, 'r')
@@ -267,4 +267,6 @@ def eval_bandit():
 
 
 if __name__ == "__main__":
-	eval_bandit()
+	while True:
+		eval_bandit()
+		time.sleep(60*10)
