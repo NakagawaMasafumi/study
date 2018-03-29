@@ -40,10 +40,14 @@ class Corpus:
 		if area == 'tsukuba':
 			self.name_ja = u'つくば'
 			self.name_en = u'Tsukuba'
-			self.train_include = db.t_train2
-			self.train_exclude = db.s_train2
-			self.test_include = db.t_test2
-			self.test_exclude = db.s_test2
+			# self.train_include = db.t_train2
+			# self.train_exclude = db.s_train2
+			# self.test_include = db.t_test2
+			# self.test_exclude = db.s_test2
+			self.train_include = db.train_include_tokyo_23
+			self.train_exclude = db.train_exclude_tokyo_23
+			self.test_include = db.test_include_tokyo_23
+			self.test_exclude = db.test_exclude_tokyo_23
 		elif area == 'tokyo_23':
 			self.name_ja = u'東京'
 			self.name_en = u'Tokyo'
